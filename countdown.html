@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -51,6 +52,8 @@
 
         function startPro(data) {
             var now = new Date();
+            var sec_arr = [];
+            var date_arr = [];
             for (var i = 0, p = data.length; i < p; i++) {
                 // //时间集合
                 // var endtime = new Date(data[i].datetime);
@@ -58,17 +61,15 @@
                 // $("#d_" + i).text((endtime - now) / 1000);
 
                 var d_tmp = $("#d_" + i);
-                var sec_arr = [];
-                var date_arr = [];
                 if (d_tmp.hasClass("date")) {
                     date_arr.push(i);
                 } else {
                     sec_arr.push(i);
                 }
 
-                secFunc(data, sec_arr);
-                dateFunc(data, date_arr);
             }
+            secFunc(data, sec_arr);
+            dateFunc(data, date_arr);
         }
 
         async function secFunc(data, index_arr) {
@@ -91,7 +92,7 @@
                 dateFuncSupport(data, index_arr);
             }, 1000);
         }
-        function dateFuncSupport(data,index_arr) {
+        function dateFuncSupport(data, index_arr) {
             var now = new Date();
             for (var i = 0, p = index_arr.length; i < p; i++) {
                 //时间集合
@@ -113,4 +114,5 @@
 
     </script>
 </body>
+
 </html>
