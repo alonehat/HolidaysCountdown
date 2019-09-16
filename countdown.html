@@ -18,14 +18,18 @@
             document.write('<center><h3>数据准备中</h3></center>');
 
             $.ajax({
-                url: "https://raw.githubusercontent.com/alonehat/HolidaysCountdown/master/jr.json",
+                url:"https://github.com/alonehat/HolidaysCountdown/raw/master/jr.json",
+                //url: "https://gitee.com/trytoyum/HolidaysCountdown/raw/master/jr.json",
+                //url:"http://192.168.1.56:9966/jr.json",
                 type: 'GET',
                 datatype: 'JSON',
                 success: function (req_data) {
-                    console.log(JSON.parse(req_data));
-                    var data = JSON.parse(req_data).data;
-
-                    startTask(data);
+                    console.log(req_data);
+                    if(typeof(req_data)=="string"){
+                        startTask( JSON.parse(req_data).data );
+                    }else{
+                        startTask(req_data.data);
+                    }
                 },
                 error: function (err) {
                     $("h3").text("数据异常");
@@ -39,7 +43,7 @@
             document.write('<ul id="ul_list" style="list-style-type: circle;"></ul>');
             var obj = $("#ul_list");
             for (var i = 0, p = data.length; i < p; i++) {
-                var tmp = ['<li><u>', data[i].name, '</u>&nbsp;&nbsp;<i>Seconds:</i>&nbsp;&nbsp;<b id="d_', i, '" style="cursor: pointer;" ></b>&nbsp;s</li>'].join('');
+                var tmp = ['<li><u>', data[i].name, '</u>&nbsp;&nbsp;<i>Seconds:</i>&nbsp;&nbsp;<b id="d_', i, '" style="cursor: pointer;padding-top:10px;" ></b>&nbsp;s</li>'].join('');
                 obj.append(tmp);
             }
             $("body").on("click", "b", function () {
