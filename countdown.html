@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Countting</title>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+
+<body>
+
+    <ul id="ul_list">
+    </ul>
+
+
+    <script>
+        //var aa=new Date(time.getTime()+1000*1)
+        $(function () {
+
+            document.write('<center><h3>数据准备中</h3></center>');
+
+            var data = [];
+            var req_status = false;
+
+            $.ajax({
+                url: "jr.json",
+                type: "GET",
+                success: function (req_data) {
+                    data = req_data.data;
+                    req_status = true;
+                },
+                error: function (err) {
+                    console.error(err);
+                }
+            });
+            if (req_status) {
+                return;
+            }
+            $("center").remove();
+
+            var obj = $("#ul_list");
+            for (var i = 0, p = data.length; i < p; i++) {
+                var tmp = ['<li><u>', data[i].name, '</u><i>Seconds:</i>&nbsp;<b id="d_', i, '"></b>&nbsp;s</li>'].join('');
+                obj.append(tmp);
+            }
+
+
+
+            setInterval(() => {
+                var now = new Date();
+
+                for (var i = 0, p = data.length; i < p; i++) {
+                    //时间集合
+                    var endtime = new Date(data[i].datetime);
+
+                    //赋值
+                    $("#d_" + i).text((endtime - now) / 1000);
+                }
+
+            }, 100);
+        });
+
+    </script>
+</body>
+
+</html>
