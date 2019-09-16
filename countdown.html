@@ -18,8 +18,6 @@
         $(function () {
             document.write('<center><h3>数据准备中</h3></center>');
             var jsonurl = "https://raw.githubusercontent.com/alonehat/HolidaysCountdown/master/jr.json";
-            //var jsonurl: "https://gitee.com/trytoyum/HolidaysCountdown/raw/master/jr.json",
-            //var jsonurl: "./jr.json",
 
             $.ajax({
                 url: jsonurl,
@@ -27,7 +25,6 @@
                 datatype: 'json',
                 success: function (req_data) {
                     $("h3").text("倒计时⏲️");
-                    console.log(req_data);
                     if (typeof (req_data) == "string") {
                         startTask(JSON.parse(req_data).data);
                     } else {
@@ -47,7 +44,7 @@
             document.write('<ul id="ul_list" style="list-style-type: circle;"></ul>');
             var obj = $("#ul_list");
             for (var i = 0, p = data.length; i < p; i++) {
-                var tmp = ['<li><u>', data[i].name, '</u>&nbsp;&nbsp;<i>Seconds:</i>&nbsp;&nbsp;<b id="d_', i, '" style="cursor: pointer;padding-top:10px;" ></b>&nbsp;s</li>'].join('');
+                var tmp = ['<li style="cursor: pointer;padding-top:10px;"><u>', data[i].name, '</u>&nbsp;&nbsp;<i>Seconds:</i>&nbsp;&nbsp;<b id="d_', i, '"></b>&nbsp;s</li>'].join('');
                 obj.append(tmp);
             }
             $("body").on("click", "b", function () {
@@ -63,11 +60,6 @@
             var sec_arr = [];
             var date_arr = [];
             for (var i = 0, p = data.length; i < p; i++) {
-                // //时间集合
-                // var endtime = new Date(data[i].datetime);
-                // //赋值
-                // $("#d_" + i).text((endtime - now) / 1000);
-
                 var d_tmp = $("#d_" + i);
                 if (d_tmp.hasClass("date")) {
                     date_arr.push(i);
@@ -76,20 +68,31 @@
                 }
 
             }
-            secFunc(data, sec_arr);
-            dateFunc(data, date_arr);
+            var data_res = dataParser(data).data;
+            secFunc(data_res, sec_arr);
+            dateFunc(data_res, date_arr);
         }
 
+        function dataParser(data) {
+            var now = new Date();
+            var parseRes = { "data": [] };
+            for (var i = 0, p = data.length; i < p; i++) {
+                //时间集合
+                var endtime = new Date([now.getFullYear(), '/', data[i].datetime].join(''));
+                if (endtime <= now) {
+                    endtime = new Date([now.getFullYear() + 1, '/', data[i].datetime].join(''));
+                }
+                
+                parseRes.data.push({ "name": data[i].name, "datetime": endtime });
+            }
+            return parseRes;
+        }
         async function secFunc(data, index_arr) {
             window.clearInterval(sec_interval);
             sec_interval = setInterval(() => {
                 var now = new Date();
                 for (var i = 0, p = index_arr.length; i < p; i++) {
-                    //时间集合
-                    var endtime = new Date([now.getFullYear(), '/', data[index_arr[i]].datetime].join(''));
-                    if (endtime <= now) {
-                        endtime = new Date([now.getFullYear() + 1, '/', data[index_arr[i]].datetime].join(''));
-                    }
+                    endtime = data[index_arr[i]].datetime;
 
                     //赋值
                     $("#d_" + index_arr[i]).text((endtime - now) / 1000);
@@ -106,16 +109,13 @@
         function dateFuncSupport(data, index_arr) {
             var now = new Date();
             for (var i = 0, p = index_arr.length; i < p; i++) {
-                //时间集合
-                var endtime = new Date([now.getFullYear(), '/', data[index_arr[i]].datetime].join(''));
-                if (endtime <= now) {
-                    endtime = new Date([now.getFullYear() + 1, '/', data[index_arr[i]].datetime].join(''));
-                }
+                endtime = data[index_arr[i]].datetime;
+
                 //赋值
                 var day = (endtime - now) / 1000 / 60 / 60 / 24;
-                var hour = parseFloat("0." + (day + "").split('.')[1]) * 24;
-                var minu = parseFloat("0." + (hour + "").split('.')[1]) * 60;
-                var sec = parseFloat("0." + (minu + "").split('.')[1].substring(0, 4)) * 60;
+                var hour = parseFloat("0." + (day + "").split('.')[1]) * 24; 
+                var minu = parseFloat("0." + (hour + "").split('.')[1]) * 60; 
+                var sec = parseFloat("0." + (minu + "").split('.')[1].substring(0, 4)) * 60; 
 
                 day = parseInt(day);
                 hour = parseInt(hour);
