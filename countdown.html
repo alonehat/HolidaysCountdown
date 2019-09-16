@@ -86,7 +86,10 @@
                 var now = new Date();
                 for (var i = 0, p = index_arr.length; i < p; i++) {
                     //时间集合
-                    var endtime = new Date(data[index_arr[i]].datetime);
+                    var endtime = new Date([now.getFullYear(), '/', data[index_arr[i]].datetime].join(''));
+                    if (endtime <= now) {
+                        endtime = new Date([now.getFullYear() + 1, '/', data[index_arr[i]].datetime].join(''));
+                    }
 
                     //赋值
                     $("#d_" + index_arr[i]).text((endtime - now) / 1000);
@@ -104,9 +107,11 @@
             var now = new Date();
             for (var i = 0, p = index_arr.length; i < p; i++) {
                 //时间集合
-                var endtime = new Date(data[index_arr[i]].datetime);
-
-                // //赋值
+                var endtime = new Date([now.getFullYear(), '/', data[index_arr[i]].datetime].join(''));
+                if (endtime <= now) {
+                    endtime = new Date([now.getFullYear() + 1, '/', data[index_arr[i]].datetime].join(''));
+                }
+                //赋值
                 var day = (endtime - now) / 1000 / 60 / 60 / 24;
                 var hour = parseFloat("0." + (day + "").split('.')[1]) * 24;
                 var minu = parseFloat("0." + (hour + "").split('.')[1]) * 60;
