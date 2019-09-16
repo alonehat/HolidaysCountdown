@@ -5,17 +5,23 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Countting</title>
+    <title>CountDown</title>
+    <style>
+        b {
+            display: block;
+            cursor: pointer;
+        }
+    </style>
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 
 <body>
 
     <script>
-        //var aa=new Date(time.getTime()+1000*1)
+        var sec_interval;
+        var date_interval;
         $(function () {
             document.write('<center><h3>数据准备中</h3></center>');
-            var data = [];
 
             $.ajax({
                 url: "https://raw.githubusercontent.com/alonehat/HolidaysCountdown/master/jr.json",
@@ -23,7 +29,7 @@
                 datatype: 'JSON',
                 success: function (req_data) {
                     console.log(JSON.parse(req_data));
-                    data = JSON.parse(req_data).data;
+                    var data = JSON.parse(req_data).data;
 
                     startTask(data);
                 },
@@ -37,24 +43,82 @@
         });
 
         function startTask(data) {
-            document.write('<ul id="ul_list"></ul>');
+            document.write('<ul id="ul_list" style="list-style-type: circle;"></ul>');
             var obj = $("#ul_list");
             for (var i = 0, p = data.length; i < p; i++) {
-                var tmp = ['<li><u>', data[i].name, '</u><i>Seconds:</i>&nbsp;<b id="d_', i, '"></b>&nbsp;s</li>'].join('');
+                var tmp = ['<li><u>', data[i].name, '</u>&nbsp;&nbsp;<i>Seconds:</i>&nbsp;&nbsp;<b id="d_', i, '" style="cursor: pointer;" ></b>&nbsp;s</li>'].join('');
                 obj.append(tmp);
             }
-            setInterval(() => {
-                var now = new Date();
 
-                for (var i = 0, p = data.length; i < p; i++) {
-                    //时间集合
-                    var endtime = new Date(data[i].datetime);
+            startPro(data);
 
-                    //赋值
-                    $("#d_" + i).text((endtime - now) / 1000);
+            $("body").on("click", "b", function () {
+                $(this).toggleClass("date");
+                startPro(data);
+            });
+
+        }
+
+        function startPro(data) {
+            var now = new Date();
+            for (var i = 0, p = data.length; i < p; i++) {
+                // //时间集合
+                // var endtime = new Date(data[i].datetime);
+                // //赋值
+                // $("#d_" + i).text((endtime - now) / 1000);
+
+                var d_tmp = $("#d_" + i);
+                var sec_arr = [];
+                var date_arr = [];
+                if (d_tmp.hasClass("date")) {
+                    date_arr.push(i);
+                } else {
+                    sec_arr.push(i);
                 }
 
+                secFunc(data, sec_arr);
+                dateFunc(data, date_arr);
+            }
+        }
+
+        async function secFunc(data, index_arr) {
+            window.clearInterval(sec_interval);
+            sec_interval = setInterval(() => {
+                var now = new Date();
+                for (var i = 0, p = index_arr.length; i < p; i++) {
+                    //时间集合
+                    var endtime = new Date(data[index_arr[i]].datetime);
+
+                    //赋值
+                    $("#d_" + index_arr[i]).text((endtime - now) / 1000);
+                }
             }, 100);
+        }
+        async function dateFunc(data, index_arr) {
+            window.clearInterval(date_interval);
+            dateFuncSupport(data, index_arr);
+            date_interval = setInterval(() => {
+                dateFuncSupport(data, index_arr);
+            }, 1000);
+        }
+        function dateFuncSupport(data,index_arr) {
+            var now = new Date();
+            for (var i = 0, p = index_arr.length; i < p; i++) {
+                //时间集合
+                var endtime = new Date(data[index_arr[i]].datetime);
+
+                // //赋值
+                var day = (endtime - now) / 1000 / 60 / 60 / 24;
+                var hour = parseFloat("0." + (day + "").split('.')[1]) * 24;
+                var minu = parseFloat("0." + (hour + "").split('.')[1]) * 60;
+                var sec = parseFloat("0." + (minu + "").split('.')[1].substring(0, 4)) * 60;
+
+                day = parseInt(day);
+                hour = parseInt(hour);
+                minu = parseInt(minu);
+                sec = parseInt(sec);
+                $("#d_" + index_arr[i]).text([day, '天 ', hour, ' 时 ', minu, ' 分 ', sec, ' 秒'].join(''));
+            }
         }
 
     </script>
