@@ -11,43 +11,38 @@
 
 <body>
 
-    <ul id="ul_list">
-    </ul>
-
-
     <script>
         //var aa=new Date(time.getTime()+1000*1)
         $(function () {
-
             document.write('<center><h3>数据准备中</h3></center>');
-
             var data = [];
-            var req_status = false;
 
             $.ajax({
                 url: "https://raw.githubusercontent.com/alonehat/HolidaysCountdown/master/jr.json",
-                type: "GET",
+                type: 'GET',
+                datatype: 'JSON',
                 success: function (req_data) {
-                    data = req_data.data;
-                    req_status = true;
+                    console.log(JSON.parse(req_data));
+                    data = JSON.parse(req_data).data;
+
+                    startTask(data);
                 },
                 error: function (err) {
+                    $("h3").text("数据异常");
+                    return;
                     console.error(err);
                 }
             });
-            if (req_status) {
-                return;
-            }
-            $("center").remove();
 
+        });
+
+        function startTask(data) {
+            document.write('<ul id="ul_list"></ul>');
             var obj = $("#ul_list");
             for (var i = 0, p = data.length; i < p; i++) {
                 var tmp = ['<li><u>', data[i].name, '</u><i>Seconds:</i>&nbsp;<b id="d_', i, '"></b>&nbsp;s</li>'].join('');
                 obj.append(tmp);
             }
-
-
-
             setInterval(() => {
                 var now = new Date();
 
@@ -60,7 +55,7 @@
                 }
 
             }, 100);
-        });
+        }
 
     </script>
 </body>
