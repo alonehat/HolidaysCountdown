@@ -11,28 +11,31 @@
 
 <body>
 
+    <script type="text/javascript" src="https://gitee.com/trytoyum/HolidaysCountdown/raw/master/jr.json"></script>
     <script>
         var sec_interval;
         var date_interval;
         $(function () {
             document.write('<center><h3>数据准备中</h3></center>');
+            var jsonurl = "https://raw.githubusercontent.com/alonehat/HolidaysCountdown/master/jr.json";
+            //var jsonurl: "https://gitee.com/trytoyum/HolidaysCountdown/raw/master/jr.json",
+            //var jsonurl: "./jr.json",
 
             $.ajax({
-                url:"https://raw.githubusercontent.com/alonehat/HolidaysCountdown/master/jr.json",
-                //url: "https://gitee.com/trytoyum/HolidaysCountdown/raw/master/jr.json",
-                //url:"http://192.168.1.56:9966/jr.json",
-                type: 'GET',
-                datatype: 'text/json',
+                url: jsonurl,
+                type: 'get',
+                datatype: 'json',
                 success: function (req_data) {
                     console.log(req_data);
-                    if(typeof(req_data)=="string"){
-                        startTask( JSON.parse(req_data).data );
-                    }else{
+                    if (typeof (req_data) == "string") {
+                        startTask(JSON.parse(req_data).data);
+                    } else {
                         startTask(req_data.data);
                     }
                 },
                 error: function (err) {
-                    $("h3").text("数据异常");
+                    $("h3").text("数据异常,你可能被墙了🧱");
+                    $("h3").append(['<a href="', jsonurl, '">点击测试</a>'].join(''));
                     return;
                 }
             });
