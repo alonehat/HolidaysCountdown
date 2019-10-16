@@ -23,7 +23,7 @@
                 type: 'get',
                 datatype: 'json',
                 success: function (req_data) {
-                    $("h3").text("倒计时⏲️");
+                    $("h3").text("倒计时⏲️"+req_data);
                     if (typeof (req_data) == "string") {
                         startTask(JSON.parse(req_data).data);
                     } else {
